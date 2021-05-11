@@ -17,27 +17,19 @@
  * If not, see http://www.gnu.org/licenses/.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-buildscript {
-    repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
+package com.geeks4ever.batteryalert;
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 
-allprojects {
-    repositories {
-        google()
-        jcenter()
-    }
-}
+public class CloseButtonReceiver extends BroadcastReceiver {
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+    @Override
+    public void onReceive(Context context, Intent intent) {
+
+        context.stopService(new Intent(context, ForegroundService.class));
+
+    }
+
 }

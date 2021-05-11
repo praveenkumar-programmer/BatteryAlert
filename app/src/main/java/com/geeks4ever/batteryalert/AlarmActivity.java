@@ -17,27 +17,38 @@
  * If not, see http://www.gnu.org/licenses/.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-buildscript {
-    repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
+package com.geeks4ever.batteryalert;
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
+import androidx.appcompat.app.AppCompatActivity;
 
-allprojects {
-    repositories {
-        google()
-        jcenter()
-    }
-}
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+public class AlarmActivity extends AppCompatActivity {
+
+    Uri alarmSound;
+    MediaPlayer mp;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_alarm);
+
+
+        alarmSound = RingtoneManager. getDefaultUri (RingtoneManager.TYPE_ALARM );
+        mp = MediaPlayer. create (getApplicationContext(), alarmSound);
+        mp.start();
+    }
+
+
+    public void stopAlarm(View view){
+
+        mp.stop();
+        finish();
+
+    }
+
 }
