@@ -1,7 +1,7 @@
 /*
  * Created by Praveen Kumar for BatteryAlert.
  * Copyright (c) 2021.
- * Last modified on 11/5/21 12:11 PM.
+ * Last modified on 17/5/21 12:14 AM.
  *
  * This file/part of BatteryAlert is OpenSource.
  *
@@ -19,36 +19,65 @@
 
 package com.geeks4ever.batteryalert;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+
+import com.google.android.material.textview.MaterialTextView;
+
 public class AlarmActivity extends AppCompatActivity {
 
+    Repository repository;
     Uri alarmSound;
     MediaPlayer mp;
+    MaterialTextView message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
 
+        message = findViewById(R.id.alarm_page_message_text);
+
+        repository = Repository.getInstance(this);
+        repository.setAlarmIsOn(true);
+
+        repository.getBatteryPercentage().observeForever(new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                if(integer != null)
+                    message.setText("Battery Reached "+ String.valueOf(integer) +"%!\nPlease unplug the charger.");
+            }
+        });
+
+        repository.getAlarmIsOn().observeForever(new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean != null && !aBoolean)
+                    finish();
+            }
+        });
 
         alarmSound = RingtoneManager. getDefaultUri (RingtoneManager.TYPE_ALARM );
         mp = MediaPlayer. create (getApplicationContext(), alarmSound);
         mp.start();
+
     }
 
 
     public void stopAlarm(View view){
-
-        mp.stop();
         finish();
-
     }
 
+    @Override
+    protected void onDestroy() {
+        mp.stop();
+        repository.setAlarmIsOn(false);
+        super.onDestroy();
+    }
 }

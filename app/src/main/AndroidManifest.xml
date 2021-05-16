@@ -2,7 +2,7 @@
 <!--
   ~ Created by Praveen Kumar for BatteryAlert.
   ~ Copyright (c) 2021.
-  ~ Last modified on 11/5/21 12:11 PM.
+  ~ Last modified on 16/5/21 11:11 PM.
   ~
   ~ This file/part of BatteryAlert is OpenSource.
   ~
@@ -43,6 +43,14 @@
         <receiver android:name=".CloseButtonReceiver" />
 
         <service android:name=".ForegroundService" />
+
+        <receiver android:name=".ChargingStateChangeReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
