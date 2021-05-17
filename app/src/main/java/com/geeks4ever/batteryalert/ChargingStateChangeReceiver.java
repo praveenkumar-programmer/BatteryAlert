@@ -1,7 +1,7 @@
 /*
  * Created by Praveen Kumar for BatteryAlert.
  * Copyright (c) 2021.
- * Last modified on 17/5/21 12:43 PM.
+ * Last modified on 17/5/21 2:31 PM.
  *
  * This file/part of BatteryAlert is OpenSource.
  *
@@ -24,6 +24,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.os.Build;
+import android.util.Log;
 
 public class ChargingStateChangeReceiver extends BroadcastReceiver {
 
@@ -37,6 +39,8 @@ public class ChargingStateChangeReceiver extends BroadcastReceiver {
 
         boolean isCharging = isConnected(context);
 
+        Log.e("received ; ", String.valueOf(isCharging));
+
         repository = Repository.getInstance(context);
 
         mainServiceOnOff = repository.getMainServiceOnOff().getValue();
@@ -49,7 +53,12 @@ public class ChargingStateChangeReceiver extends BroadcastReceiver {
 
 
         if(mainServiceOnOff && automaticMode){
-            context.startService(new Intent(context, ForegroundService.class));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(new Intent(context, ForegroundService.class));
+            }
+            else
+                context.startService(new Intent(context, ForegroundService.class));
         }
 
     }

@@ -2,7 +2,7 @@
 <!--
   ~ Created by Praveen Kumar for BatteryAlert.
   ~ Copyright (c) 2021.
-  ~ Last modified on 16/5/21 11:11 PM.
+  ~ Last modified on 17/5/21 2:12 PM.
   ~
   ~ This file/part of BatteryAlert is OpenSource.
   ~
@@ -30,8 +30,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BatteryAlert">
-        <activity android:name=".AlarmActivity"
-            android:launchMode="singleInstance"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

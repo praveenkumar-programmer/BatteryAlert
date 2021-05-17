@@ -1,7 +1,7 @@
 /*
  * Created by Praveen Kumar for BatteryAlert.
  * Copyright (c) 2021.
- * Last modified on 17/5/21 12:01 PM.
+ * Last modified on 17/5/21 1:24 PM.
  *
  * This file/part of BatteryAlert is OpenSource.
  *
@@ -22,6 +22,7 @@ package com.geeks4ever.batteryalert;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -104,7 +105,11 @@ public class MainActivity extends AppCompatActivity {
                     if(automaticModeLayout.getVisibility() == View.GONE) automaticModeLayout.setVisibility(View.VISIBLE);
                     if(automaticModeLabel.getVisibility() == View.GONE) automaticModeLabel.setVisibility(View.VISIBLE);
                     if(automationSwitch.getVisibility() == View.GONE) automationSwitch.setVisibility(View.VISIBLE);
-                    startService(new Intent(MainActivity.this, ForegroundService.class));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(new Intent(MainActivity.this, ForegroundService.class));
+                    }
+                    else
+                        startService(new Intent(MainActivity.this, ForegroundService.class));
                 }
                 else {
                     if(mainServiceSwitch.isChecked()) mainServiceSwitch.setChecked(false);

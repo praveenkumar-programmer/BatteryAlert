@@ -1,7 +1,7 @@
 /*
  * Created by Praveen Kumar for BatteryAlert.
  * Copyright (c) 2021.
- * Last modified on 17/5/21 12:42 PM.
+ * Last modified on 17/5/21 2:31 PM.
  *
  * This file/part of BatteryAlert is OpenSource.
  *
@@ -20,11 +20,15 @@
 package com.geeks4ever.batteryalert;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.IBinder;
@@ -42,6 +46,9 @@ public class ForegroundService extends Service {
     private static final int NOTIFICATION_ID = 999;
 
     Repository repository;
+
+    Uri alarmSound;
+    MediaPlayer mp;
 
     int battery_threshold = 100;
     volatile boolean alertOnUsbCharging = false;
@@ -63,6 +70,9 @@ public class ForegroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        alarmSound = RingtoneManager. getDefaultUri (RingtoneManager.TYPE_ALARM );
+        mp = MediaPlayer. create (this, alarmSound);
 
         repository = Repository.getInstance(this);
 
@@ -149,8 +159,7 @@ public class ForegroundService extends Service {
                         });
 
                         if(batteryPct >= battery_threshold){
-                            startActivity(new Intent(ForegroundService.this, AlarmActivity.class));
-                            stopSelf();
+                            showAlert("Battery Reached " + batteryPct + "%");
                         }
                     }
 
@@ -164,8 +173,7 @@ public class ForegroundService extends Service {
                         });
 
                         if(batteryPct >= battery_threshold && alertOnUsbCharging) {
-                            startActivity(new Intent(ForegroundService.this, AlarmActivity.class));
-                            stopSelf();
+                            showAlert("Battery Reached " + batteryPct + "%");
                         }
                     }
 
@@ -175,8 +183,6 @@ public class ForegroundService extends Service {
             }
         }, 0, 1000);
 
-        builder = new NotificationCompat.Builder(this, "Foreground Service");
-        builder.setOngoing(true);
         managerCompat = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -184,6 +190,27 @@ public class ForegroundService extends Service {
 
         Intent closeButtonIntent = new Intent(this, CloseButtonReceiver.class);
         PendingIntent closeButtonPendingIntent = PendingIntent.getBroadcast(this, 0, closeButtonIntent,0);
+
+        //________________________________________________________________________________________;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            String CHANNEL_ID = "Battery Alert";
+            CharSequence name = "Foreground Service";
+            String Description = "This is my channel";
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+            mChannel.enableLights(true);
+            mChannel.enableVibration(false);
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mChannel.setShowBadge(false);
+            managerCompat.createNotificationChannel(mChannel);
+        }
+
+        //_________________________________________________________________________________________
+
+        builder = new NotificationCompat.Builder(this, "Battery Alert");
+        builder.setOngoing(true);
 
         notification = builder
                 .setContentTitle("Battery Alert")
@@ -197,14 +224,27 @@ public class ForegroundService extends Service {
 
         managerCompat.notify(NOTIFICATION_ID, notification);
 
+        startForeground(NOTIFICATION_ID, notification);
+
 
     }
+
 
     @Override
     public void onDestroy() {
         timer.cancel();
+        mp.stop();
         managerCompat.cancel(NOTIFICATION_ID);
         super.onDestroy();
+    }
+
+    void showAlert(String text){
+
+        timer.cancel();
+        mp.start();
+        builder.setContentText(text)
+                .setCategory(NotificationCompat.CATEGORY_ALARM);
+        managerCompat.notify(NOTIFICATION_ID, builder.build());
     }
 
 
