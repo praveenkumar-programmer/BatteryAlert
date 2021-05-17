@@ -1,7 +1,7 @@
 /*
  * Created by Praveen Kumar for BatteryAlert.
  * Copyright (c) 2021.
- * Last modified on 17/5/21 12:14 AM.
+ * Last modified on 17/5/21 12:01 PM.
  *
  * This file/part of BatteryAlert is OpenSource.
  *
@@ -45,21 +45,12 @@ public class AlarmActivity extends AppCompatActivity {
         message = findViewById(R.id.alarm_page_message_text);
 
         repository = Repository.getInstance(this);
-        repository.setAlarmIsOn(true);
 
         repository.getBatteryPercentage().observeForever(new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
                 if(integer != null)
                     message.setText("Battery Reached "+ String.valueOf(integer) +"%!\nPlease unplug the charger.");
-            }
-        });
-
-        repository.getAlarmIsOn().observeForever(new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean != null && !aBoolean)
-                    finish();
             }
         });
 
@@ -77,7 +68,6 @@ public class AlarmActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         mp.stop();
-        repository.setAlarmIsOn(false);
         super.onDestroy();
     }
 }

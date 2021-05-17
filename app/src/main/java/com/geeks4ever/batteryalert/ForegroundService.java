@@ -1,7 +1,7 @@
 /*
  * Created by Praveen Kumar for BatteryAlert.
  * Copyright (c) 2021.
- * Last modified on 17/5/21 12:13 AM.
+ * Last modified on 17/5/21 12:42 PM.
  *
  * This file/part of BatteryAlert is OpenSource.
  *
@@ -42,7 +42,6 @@ public class ForegroundService extends Service {
     private static final int NOTIFICATION_ID = 999;
 
     Repository repository;
-    volatile boolean isAlarmAlreadyRinging;
 
     int battery_threshold = 100;
     volatile boolean alertOnUsbCharging = false;
@@ -83,14 +82,6 @@ public class ForegroundService extends Service {
             }
         });
 
-        repository.getAlarmIsOn().observeForever(new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean != null)
-                    isAlarmAlreadyRinging = aBoolean;
-            }
-        });
-
         repository.getAlertOnUsbCharging().observeForever(new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -104,8 +95,10 @@ public class ForegroundService extends Service {
             public void onChanged(Integer integer) {
                 if(integer == null)
                     return;
+                if(battery_percentage.equals(String.valueOf(integer)))
+                    return;
                 battery_percentage = String.valueOf(integer);
-                updateNotificationText("Battery Level : "+battery_percentage+"\tCharge Type : "+chargeMode);
+                updateNotificationText(battery_percentage + "% ( "+ chargeMode + " )\n" + "Alert on " + battery_threshold + "%");
             }
         });
 
@@ -114,8 +107,12 @@ public class ForegroundService extends Service {
             public void onChanged(String s) {
                 if(s == null)
                     return;
+
+                if(s.equals(chargeMode))
+                    return;
+
                 chargeMode = s;
-                updateNotificationText("Battery Level : "+battery_percentage+"\tCharge Type : "+chargeMode);
+                updateNotificationText(battery_percentage + "% ( "+ chargeMode + " )\n" + "Alert on " + battery_threshold + "%");
             }
         });
 
@@ -151,9 +148,8 @@ public class ForegroundService extends Service {
                             }
                         });
 
-                        if(batteryPct == battery_threshold){
-                            if(!isAlarmAlreadyRinging)
-                                startActivity(new Intent(ForegroundService.this, AlarmActivity.class));
+                        if(batteryPct >= battery_threshold){
+                            startActivity(new Intent(ForegroundService.this, AlarmActivity.class));
                             stopSelf();
                         }
                     }
@@ -167,9 +163,8 @@ public class ForegroundService extends Service {
                             }
                         });
 
-                        if(batteryPct == battery_threshold && alertOnUsbCharging) {
-                            if(!isAlarmAlreadyRinging)
-                                startActivity(new Intent(ForegroundService.this, AlarmActivity.class));
+                        if(batteryPct >= battery_threshold && alertOnUsbCharging) {
+                            startActivity(new Intent(ForegroundService.this, AlarmActivity.class));
                             stopSelf();
                         }
                     }
@@ -192,9 +187,11 @@ public class ForegroundService extends Service {
 
         notification = builder
                 .setContentTitle("Battery Alert")
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentText("Battery Level : "+battery_percentage+"\tCharge Type : "+chargeMode)
+                .setSmallIcon(R.drawable.battery_icon)
+                .setContentText(battery_percentage + "% ( "+ chargeMode + " )\n" + "Alert on " + battery_threshold + "%")
                 .setContentIntent(homePagePendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(battery_percentage + "% ( "+ chargeMode + " )\n" + "Alert on " + battery_threshold + "%"))
                 .addAction(R.drawable.ic_launcher_foreground, "stop", closeButtonPendingIntent)
                 .build();
 
@@ -207,7 +204,6 @@ public class ForegroundService extends Service {
     public void onDestroy() {
         timer.cancel();
         managerCompat.cancel(NOTIFICATION_ID);
-        repository.setAlarmIsOn(false);
         super.onDestroy();
     }
 
@@ -218,6 +214,7 @@ public class ForegroundService extends Service {
             return;
 
         builder.setContentText(text);
+        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(text));
         managerCompat.notify(NOTIFICATION_ID, builder.build());
 
     }

@@ -1,7 +1,7 @@
 /*
  * Created by Praveen Kumar for BatteryAlert.
  * Copyright (c) 2021.
- * Last modified on 17/5/21 12:05 AM.
+ * Last modified on 17/5/21 12:43 PM.
  *
  * This file/part of BatteryAlert is OpenSource.
  *
@@ -22,6 +22,7 @@ package com.geeks4ever.batteryalert;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.BatteryManager;
 
 public class ChargingStateChangeReceiver extends BroadcastReceiver {
@@ -34,11 +35,7 @@ public class ChargingStateChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-
-        int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-
-        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                status == BatteryManager.BATTERY_STATUS_FULL;
+        boolean isCharging = isConnected(context);
 
         repository = Repository.getInstance(context);
 
@@ -47,11 +44,20 @@ public class ChargingStateChangeReceiver extends BroadcastReceiver {
 
         if(!isCharging){
             context.stopService(new Intent(context, ForegroundService.class));
+            return;
         }
+
 
         if(mainServiceOnOff && automaticMode){
             context.startService(new Intent(context, ForegroundService.class));
         }
 
     }
+
+    public static boolean isConnected(Context context) {
+        Intent intent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+        return plugged == BatteryManager.BATTERY_PLUGGED_AC || plugged == BatteryManager.BATTERY_PLUGGED_USB;
+    }
+
 }

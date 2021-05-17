@@ -2,7 +2,7 @@
 <!--
   ~ Created by Praveen Kumar for BatteryAlert.
   ~ Copyright (c) 2021.
-  ~ Last modified on 16/5/21 11:08 PM.
+  ~ Last modified on 17/5/21 11:51 AM.
   ~
   ~ This file/part of BatteryAlert is OpenSource.
   ~
@@ -33,12 +33,12 @@
         android:layout_height="150dp"
         android:src="@drawable/battery_icon"
         android:tint="@color/teal_200"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintBottom_toTopOf="@+id/materialTextView"
+        app:layout_constraintBottom_toTopOf="@+id/alarm_page_message_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/alarm_page_message_text"
@@ -47,9 +47,9 @@
         android:layout_margin="20dp"
         android:gravity="center"
         android:text="Battery Reached 100%!\nPlease unplug the charger."
+        android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -61,19 +61,19 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:onClick="stopAlarm"
+        android:paddingStart="50dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="50dp"
+        android:paddingBottom="14dp"
         android:text="Stop Alarm"
         app:cornerRadius="30dp"
-        android:paddingStart="50dp"
-        android:paddingEnd="50dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp"
-        android:layout_marginTop="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/materialTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/alarm_page_message_text" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

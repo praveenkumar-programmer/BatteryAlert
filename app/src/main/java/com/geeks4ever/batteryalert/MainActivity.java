@@ -1,7 +1,7 @@
 /*
  * Created by Praveen Kumar for BatteryAlert.
  * Copyright (c) 2021.
- * Last modified on 17/5/21 12:14 AM.
+ * Last modified on 17/5/21 12:01 PM.
  *
  * This file/part of BatteryAlert is OpenSource.
  *
@@ -122,14 +122,7 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean == null)
                     return;
-                if(aBoolean) {
-                    if(!automationSwitch.isChecked()) automationSwitch.setChecked(true);
-                    startService(new Intent(MainActivity.this, ForegroundService.class));
-                }
-                else {
-                    if(automationSwitch.isChecked()) automationSwitch.setChecked(false);
-                    stopService(new Intent(MainActivity.this, ForegroundService.class));
-                }
+                automationSwitch.setChecked(aBoolean);
             }
         });
 
@@ -138,14 +131,7 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean == null)
                     return;
-                if(aBoolean) {
-                    if(!alertForUsbSwitch.isChecked()) alertForUsbSwitch.setChecked(true);
-                    startService(new Intent(MainActivity.this, ForegroundService.class));
-                }
-                else {
-                    if(alertForUsbSwitch.isChecked()) alertForUsbSwitch.setChecked(false);
-                    stopService(new Intent(MainActivity.this, ForegroundService.class));
-                }
+                alertForUsbSwitch.setChecked(aBoolean);
             }
         });
 

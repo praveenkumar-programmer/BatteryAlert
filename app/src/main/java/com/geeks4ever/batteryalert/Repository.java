@@ -1,7 +1,7 @@
 /*
  * Created by Praveen Kumar for BatteryAlert.
  * Copyright (c) 2021.
- * Last modified on 16/5/21 11:08 PM.
+ * Last modified on 17/5/21 12:03 PM.
  *
  * This file/part of BatteryAlert is OpenSource.
  *
@@ -108,16 +108,5 @@ Repository {
         context.getSharedPreferences("settings", 0).edit().putBoolean("automaticMode", automaticMode).apply();
         this.automaticMode.setValue(automaticMode);
     }
-
-    public LiveData<Boolean> getAlarmIsOn() {
-        return automaticMode;
-    }
-
-    public void setAlarmIsOn(boolean alarmIsOn) {
-        context.getSharedPreferences("settings", 0).edit().putBoolean("alarmIsOn", alarmIsOn).apply();
-        this.alarmIsOn.setValue(alarmIsOn);
-    }
-
-
 
 }
